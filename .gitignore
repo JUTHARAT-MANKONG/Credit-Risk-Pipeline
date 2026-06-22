@@ -1,0 +1,8 @@
+#Password
+.env
+
+#ไฟล์ raw data .CSV 
+data/raw/*.CSV
+
+#ไฟล์ Virtual Environment
+venv/
