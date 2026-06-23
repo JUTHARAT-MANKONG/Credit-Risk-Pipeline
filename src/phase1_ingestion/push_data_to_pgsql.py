@@ -25,13 +25,14 @@ DB_CONFIG = {
     "user" : os.getenv("DB_USER"),
     "password" : os.getenv("DB_PASSWORD")
 }
+#os.getenv() = คำสั่งดึงค่าออกมาใช้ ถ้าไม่เจอค่าใน .env จะ return None
+
 # ตรวจสอบว่า .env ครบไหม เพื่อป้องกันปัญหา connect ไม่ได้เพราะลืมใส่ค่าใน .env
 def check_config():
     missing = [k for k,v in DB_CONFIG.items() if not v]
     if missing :
         raise ValueError(f"ไม่พบค่าใน.env : {missing}")
     log.info("Config ครบถ้วน")
-    
 
 # สร้าง SQLAlchemy Engine
 def get_engine():
