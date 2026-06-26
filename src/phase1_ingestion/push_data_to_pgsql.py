@@ -1,52 +1,15 @@
 #ดึง raw data เข้า database(postgresql)
-# Password ดึงมาจากไฟล์ .env
 #--------------------------------------
 
 import pandas as pd
-from sqlalchemy import create_engine
-from dotenv import load_dotenv
 import os
-import logging
 from datetime import datetime
 
+from common.logger import get_logger
+from common.db_connection import check_config,get_engine
+
 # ตั้งค่า logging : บันทึกสิ่งที่โปรแกรมทำออกมาให้เห็น
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s"
-)
-log = logging.getLogger(__name__)
-
-# โหลดค่าจากไฟล์ .env
-load_dotenv()
-DB_CONFIG = {
-    "host" : os.getenv("DB_HOST"),
-    "port" : os.getenv("DB_PORT"),
-    "dbname" : os.getenv("DB_NAME"),
-    "user" : os.getenv("DB_USER"),
-    "password" : os.getenv("DB_PASSWORD")
-}
-#os.getenv() = คำสั่งดึงค่าออกมาใช้ ถ้าไม่เจอค่าใน .env จะ return None
-
-# ตรวจสอบว่า .env ครบไหม เพื่อป้องกันปัญหา connect ไม่ได้เพราะลืมใส่ค่าใน .env
-def check_config():
-    missing = [k for k,v in DB_CONFIG.items() if not v]
-    if missing :
-        raise ValueError(f"ไม่พบค่าใน.env : {missing}")
-    log.info("Config ครบถ้วน")
-
-# สร้าง SQLAlchemy Engine
-def get_engine():
-    try :
-        url = (
-            f"postgresql://{DB_CONFIG['user']}:{DB_CONFIG['password']}"
-            f"@{DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['dbname']}"
-        )
-        engine = create_engine(url)
-        log.info("สร้าง Engine เชื่อมต่อ PostgreSQL สำเร็จ")
-        return engine
-    except Exception as e:
-        log.error(f"สร้าง Engine ไม่ได้ : {e}")
-        raise
+log = get_logger(__name__)
 
 #โหลด CSV เข้า PostgreSQL
 def load_csv(engine , filepath : str , schema : str , table : str) :
