@@ -2,8 +2,19 @@
 #--------------------------------------
 
 import pandas as pd
+import sys
 import os
 from datetime import datetime
+
+# ระบุ directory ของ push_data_to_pgsql.py
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+# ถอย directory กลับไปที่ src
+src_dir = os.path.abspath(os.path.join(current_dir, ".."))
+
+# หาก syspath ไม่ตรงกับ src_dir ให้เอา src_dir เข้าไปแทนที่ โดย Python จะใช้ syspath เป็นจุดค้นหา module หรือ library ต่าง ๆ 
+if src_dir not in sys.path:
+    sys.path.insert(0, src_dir)
 
 from common.logger import get_logger
 from common.db_connection import check_config,get_engine
@@ -40,7 +51,7 @@ def load_csv(engine , filepath : str , schema : str , table : str) :
 def verify(engine,schema : str , table : str , expected : int) :
     query = f"SELECT COUNT(*) FROM {schema}.{table};"
     actual = pd.read_sql(query,engine).iloc[0,0]
-
+    
     if actual == expected :
         log.info(f"Reconciliation ผ่าน: DB={actual:,} = CSV={expected:,}")
     else:
@@ -72,4 +83,4 @@ def main():
         raise
 
 if __name__== "__main__":
-     main()
+    main()
