@@ -14,7 +14,7 @@ load_dotenv()
 DB_CONFIG = {
     "host" : os.getenv("DB_HOST"),
     "port" : os.getenv("DB_PORT"),
-    "db_name" : os.getenv("DB_NAME"),
+    "dbname" : os.getenv("DB_NAME"),
     "user" : os.getenv("DB_USER"),
     "password" : os.getenv("DB_PASSWORD")
 }
@@ -40,8 +40,8 @@ def get_connection() :
 def get_engine() :
     try:
         url = (
-            f"postgresql://{DB_CONFIG["user"]} : {DB_CONFIG["password"]}"
-            f"@{DB_CONFIG["host"]} : {DB_CONFIG["port"]}/{DB_CONFIG["db_name"]}"
+            f"postgresql://{DB_CONFIG["user"]}:{DB_CONFIG["password"]}"
+            f"@{DB_CONFIG["host"]}:{DB_CONFIG["port"]}/{DB_CONFIG["db_name"]}"
 
         )
         engine = create_engine(url)
