@@ -41,7 +41,7 @@ def get_engine() :
     try:
         url = (
             f"postgresql://{DB_CONFIG["user"]}:{DB_CONFIG["password"]}"
-            f"@{DB_CONFIG["host"]}:{DB_CONFIG["port"]}/{DB_CONFIG["db_name"]}"
+            f"@{DB_CONFIG["host"]}:{DB_CONFIG["port"]}/{DB_CONFIG["dbname"]}"
 
         )
         engine = create_engine(url)

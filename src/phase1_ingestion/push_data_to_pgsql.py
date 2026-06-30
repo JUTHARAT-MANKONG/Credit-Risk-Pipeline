@@ -71,8 +71,6 @@ def main():
     log.info(f" Target : {SCHEMA}.{TABLE}")
     log.info("=" *50)
 
-    conn = None
-
     try :
         check_config()  #ตรวจว่า .env ครบไหม
         engine = get_engine() #เชื่อมต่อ DB
