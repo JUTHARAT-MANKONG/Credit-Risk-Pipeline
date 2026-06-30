@@ -6,7 +6,7 @@ import sys
 import os
 from datetime import datetime
 
-# ระบุ directory ของ push_data_to_pgsql.py
+# ระบุ directory ของ file
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
 # ถอย directory กลับไปที่ src
@@ -70,6 +70,8 @@ def main():
     log.info(f" Source : {SOURCE_FILE}")
     log.info(f" Target : {SCHEMA}.{TABLE}")
     log.info("=" *50)
+
+    conn = None
 
     try :
         check_config()  #ตรวจว่า .env ครบไหม
