@@ -6,3 +6,5 @@ data/raw/*.CSV
 
 #ไฟล์ Virtual Environment
 venv/
+
+__pycache__/
