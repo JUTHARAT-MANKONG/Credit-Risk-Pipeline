@@ -3,7 +3,7 @@
 silver_transform.py
 Transform ข้อมูลจาก Bronze → Silver Layer
 Python ทำหน้าที่อ่านไฟล์ SQL แล้วส่งให้ PostgreSQL รัน
-Logic ทั้งหมดอยู่ใน sql/transform/4_silver_transform.sql
+Logic ทั้งหมดอยู่ใน sql/transform/1_silver_transform.sql
 ============================================================
 """
 
@@ -31,7 +31,7 @@ log = get_logger(__name__)
 
 # ถอย directory กลับไปที่ src โดย .parent คือการถอย 1 ครั้ง จาก phase2_transformation
 SCRIPT_DIR = Path(__file__).resolve().parent.parent 
-SQL_FILE = SCRIPT_DIR/"SQL"/"transform"/"4_silver_transform.sql"
+SQL_FILE = SCRIPT_DIR/"SQL"/"transform"/"1_silver_transform.sql"
 
 # อ่านไฟล์ SQL (แปลงข้อมูลจากไฟล์ .sql เป็น str)
 def read_sql_file(filepath: str) -> str:  
