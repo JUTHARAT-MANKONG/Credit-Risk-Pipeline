@@ -60,7 +60,7 @@ FROM (
         (SELECT COUNT(*)
          FROM silver.loan_accounts)                 AS silver_total,
 
-        (SELECT COALESCE(SUM(total_accounts), 0)
+        (SELECT COALESCE(SUM(total_accounts), 0)    --ถ้า sum() คืนค่า NULL (เช่น Table ว่างเปล่า) จะใช้ค่า 0 แทน ป้องกัน error ตอนเอาไปคำนวณต่อ 
          FROM gold.monthly_credit_risk_report)      AS gold_total
 ) counts
 
@@ -83,7 +83,7 @@ SELECT
     ROUND(silver_balance - gold_balance, 2)             AS difference,
     CASE
         -- ยอมให้ผิดพลาดได้ไม่เกิน 1 บาท (เพราะการ ROUND อาจต่างกันเล็กน้อย)
-        WHEN ABS(silver_balance - gold_balance) <= 1.00
+        WHEN ABS(silver_balance - gold_balance) <= 1.00    -- ABS ย่อมาจาก Absolute Value คือค่าสัมบูรณ์ (เอาค่าลบออกให้เป็นบวกเสมอ)
         THEN 'PASS' ELSE 'FAIL'
     END                                                 AS status,
     'SUM(orig_balance_thb) Silver vs SUM(outstanding_balance_thb) Gold'  AS detail
