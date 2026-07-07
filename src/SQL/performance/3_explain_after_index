@@ -1,0 +1,65 @@
+/*
+============================================================
+ 3_explain_after_index.sql
+ ดู Execution Plan หลังสร้าง Index
+ เปรียบเทียบกับ 1_explain_before_index.sql
+ ถ้า Index ทำงาน จะเห็น "Index Scan" แทน "Seq Scan"
+============================================================
+*/
+
+-- Query 1: หา NPL 
+-- ก่อน Index: Seq Scan (สแกนทุกแถว)
+-- หลัง Index: Index Scan on idx_silver_loan_status (เร็วกว่ามาก)
+EXPLAIN ANALYZE
+SELECT
+    cust_id,
+    txn_id,
+    loan_status,
+    orig_balance_thb,
+    provision_amount_thb
+FROM silver.loan_accounts
+WHERE loan_status = 'NPL';
+
+-- Query 2: JOIN Bronze กับ FX Rate 
+-- ก่อน Index: Seq Scan ทั้งสอง table
+-- หลัง Index: Index Scan on idx_bronze_transform_composite
+EXPLAIN ANALYZE
+SELECT
+    b.txn_id,
+    b.orig_balance_after,
+    fx.rate_to_thb
+FROM bronze.financial_transactions b
+JOIN (
+    SELECT rate_month, currency_code, rate_to_thb::NUMERIC
+    FROM raw.fx_rate
+) fx
+    ON TO_CHAR(b.txn_timestamp, 'YYYY-MM') = fx.rate_month
+    AND b.txn_currency = fx.currency_code
+WHERE b.orig_balance_after > 0;
+
+-- Query 3: สรุปรายเดือน 
+-- ก่อน Index: Seq Scan + Sort
+-- หลัง Index: Index Scan on idx_silver_txn_month
+EXPLAIN ANALYZE
+SELECT
+    TO_CHAR(txn_timestamp, 'YYYY-MM') AS txn_month,
+    COUNT(*)                           AS total,
+    SUM(orig_balance_thb)              AS total_balance
+FROM silver.loan_accounts
+GROUP BY TO_CHAR(txn_timestamp, 'YYYY-MM');
+
+
+-- ════════════════════════════════════════════════════════════
+-- ตรวจสอบ Index ทั้งหมดที่สร้างไว้
+-- ════════════════════════════════════════════════════════════
+
+-- ดูว่ามี Index อะไรบ้างในโปรเจกต์เรา
+SELECT
+    schemaname                          AS schema,
+    tablename                           AS table,
+    indexname                           AS index_name,
+    indexdef                            AS definition
+FROM pg_indexes
+WHERE schemaname IN ('bronze', 'silver', 'raw')
+  AND indexname LIKE 'idx_%'
+ORDER BY schemaname, tablename, indexname;

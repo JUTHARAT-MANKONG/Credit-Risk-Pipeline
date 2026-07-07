@@ -1,0 +1,71 @@
+/*
+============================================================
+ 2_create_indexes.sql
+ สร้าง Index เพื่อเพิ่มความเร็วในการ Query
+============================================================
+*/
+
+-- ════════════════════════════════════════════════════════════
+-- Bronze Layer Indexes
+-- ════════════════════════════════════════════════════════════
+
+-- Index 1: txn_timestamp 
+-- ใช้บ่อยมากตอน JOIN กับ FX Rate (TO_CHAR ตัดเอาแค่ปี-เดือน)
+CREATE INDEX IF NOT EXISTS idx_bronze_txn_timestamp
+    ON bronze.financial_transactions (txn_timestamp);
+
+-- Index 2: txn_currency 
+-- ใช้ตอน JOIN กับ FX Rate (AND b.txn_currency = fx.currency_code)
+CREATE INDEX IF NOT EXISTS idx_bronze_txn_currency
+    ON bronze.financial_transactions (txn_currency);
+
+-- Index 3: orig_balance_after
+-- ใช้ตอน WHERE orig_balance_after > 0 กรองก่อน JOIN
+CREATE INDEX IF NOT EXISTS idx_bronze_balance_after
+    ON bronze.financial_transactions (orig_balance_after);
+
+-- Composite Index: timestamp + currency + balance
+-- Composite Index คือ Index ที่ครอบคลุมหลาย column พร้อมกัน
+-- เหมาะกับ Query ที่ใช้ทั้ง 3 column นี้พร้อมกัน (เหมือนใน silver_transform)
+-- เร็วกว่าการใช้ Index แยกกัน 3 ตัว
+CREATE INDEX IF NOT EXISTS idx_bronze_transform_composite
+    ON bronze.financial_transactions (txn_timestamp, txn_currency, orig_balance_after);
+
+
+-- ════════════════════════════════════════════════════════════
+-- Silver Layer Indexes
+-- ════════════════════════════════════════════════════════════
+
+-- Index 4: loan_status 
+-- ใช้บ่อยมากตอน WHERE loan_status = 'NPL'
+-- และ GROUP BY loan_status ใน Report
+CREATE INDEX IF NOT EXISTS idx_silver_loan_status
+    ON silver.loan_accounts (loan_status);
+
+-- Index 5: txn_month 
+-- ใช้ตอน GROUP BY txn_month ใน gold_aggregate
+CREATE INDEX IF NOT EXISTS idx_silver_txn_month
+    ON silver.loan_accounts (txn_month);
+
+-- Index 6: delinquency_status 
+-- ใช้ตอน WHERE และ CASE WHEN delinquency_status = 'M0' ...
+CREATE INDEX IF NOT EXISTS idx_silver_delinquency
+    ON silver.loan_accounts (delinquency_status);
+
+-- Composite Index: txn_month + loan_status 
+-- Query ที่ใช้บ่อยที่สุดใน Gold คือ
+-- GROUP BY txn_month และกรองด้วย loan_status
+-- Composite Index นี้ตอบโจทย์ทั้งสองพร้อมกัน
+CREATE INDEX IF NOT EXISTS idx_silver_month_status
+    ON silver.loan_accounts (txn_month, loan_status);
+
+
+-- ════════════════════════════════════════════════════════════
+-- Raw FX Rate Indexes
+-- ════════════════════════════════════════════════════════════
+
+-- Index 7: rate_month + currency_code 
+-- ใช้ตอน JOIN กับ Bronze (ON rate_month AND currency_code)
+-- Composite เพราะ JOIN ใช้ทั้งสอง column พร้อมกันเสมอ
+CREATE INDEX IF NOT EXISTS idx_fx_month_currency
+    ON raw.fx_rate (rate_month, currency_code);
