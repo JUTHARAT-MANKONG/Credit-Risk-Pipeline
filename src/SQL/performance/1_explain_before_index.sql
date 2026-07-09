@@ -1,6 +1,6 @@
 /*
 ============================================================
- 01_explain_before_index.sql
+ 1_explain_before_index.sql
  ดู Execution Plan ก่อนสร้าง Index
  เพื่อเข้าใจว่า PostgreSQL ทำงานยังไง และช้าตรงไหน
 

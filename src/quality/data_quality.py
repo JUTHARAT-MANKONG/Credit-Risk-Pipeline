@@ -21,7 +21,7 @@ src_dir = os.path.abspath(os.path.join(current_dir, ".."))
 # หาก syspath ไม่ตรงกับ src_dir ให้เอา src_dir เข้าไปแทนที่ โดย Python จะใช้ syspath เป็นจุดค้นหา module หรือ library ต่าง ๆ 
 if src_dir not in sys.path:
     sys.path.insert(0, src_dir)
-
+ 
 from common.logger import get_logger
 from common.db_connection import check_config, get_connection
 
