@@ -1,0 +1,5 @@
+﻿Delinquency,Loan Status,Provision Rate (%),จำนวนบัญชี,ยอดหนี้รวม (THB),เงินสำรองรวม (THB)
+M0,Performing,1.0,306,209913372.28,2099133.75
+M1,Under-Performing,2.0,12,4020687.95,80413.76
+M2,Under-Performing,10.0,5,970221.17,97022.12
+M4+,NPL,100.0,1,1035395.6,1035395.6
