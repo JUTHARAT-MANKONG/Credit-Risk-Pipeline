@@ -18,38 +18,38 @@ CSV Source Files
       │
       ▼
 ┌─────────────────────────────────────────────────┐
-│                  RAW LAYER                       │
-│  raw.financial_transactions  raw.fx_rate          │
-│  (ข้อมูลดิบ ทุก column เป็น TEXT)                │
+│                  RAW LAYER                      │
+│  raw.financial_transactions  raw.fx_rate        │
+│     (ข้อมูลดิบ ทุก column เป็น TEXT)                │
 └─────────────────────────────────────────────────┘
       │
       ▼  bronze_transform.py (Type Conversion + Quarantine)
 ┌─────────────────────────────────────────────────┐
-│                 BRONZE LAYER                     │
-│  bronze.financial_transactions                   │
-│  bronze.quarantine_log                           │
-│  (แปลง Type ถูกต้อง + แยก Error rows)           │
+│                 BRONZE LAYER                    │
+│  bronze.financial_transactions                  │
+│  bronze.quarantine_log                          │
+│  (แปลง Type ถูกต้อง + แยก Error rows)            │
 └─────────────────────────────────────────────────┘
       │
       ▼  silver_transform.sql (FX Conversion + Business Logic)
 ┌─────────────────────────────────────────────────┐
-│                 SILVER LAYER                     │
-│  silver.loan_accounts                            │
-│  (FX Rate, Loan Status, Provision Amount)        │
+│                 SILVER LAYER                    │
+│  silver.loan_accounts                           │
+│  (FX Rate, Loan Status, Provision Amount)       │
 └─────────────────────────────────────────────────┘
       │
       ▼  gold_aggregate.sql (Monthly KPI Aggregation)
 ┌─────────────────────────────────────────────────┐
-│                  GOLD LAYER                      │
-│  gold.monthly_credit_risk_report                 │
-│  gold.pipeline_run_log                           │
-│  (KPI รายเดือน + Audit Log)                     │
+│                  GOLD LAYER                     │
+│  gold.monthly_credit_risk_report                │
+│  gold.pipeline_run_log                          │
+│  (KPI รายเดือน + Audit Log)                       │
 └─────────────────────────────────────────────────┘
       │
       ▼
 ┌─────────────────────────────────────────────────┐
-│               REPORTING LAYER                    │
-│  CSV Export พร้อมส่ง BoT                         │
+│               REPORTING LAYER                   │
+│  CSV Export พร้อมส่ง BoT                          │
 └─────────────────────────────────────────────────┘
 ```
 
@@ -145,8 +145,8 @@ Git
 
 ```bash
 # 1. Clone repository
-git clone https://github.com/YOUR_USERNAME/credit-risk-pipeline.git
-cd credit-risk-pipeline
+git clone https://github.com/JUTHARAT-MANKONG/Credit-Risk-Pipeline.git
+cd Credit-Risk-Pipeline
 
 # 2. สร้าง Virtual Environment
 python -m venv venv
@@ -157,15 +157,16 @@ source venv/bin/activate        # Mac/Linux
 pip install -r requirements.txt
 
 # 4. ตั้งค่า environment variables
-cp .env.example .env
+cp .env
 # แก้ไข .env ใส่ DB credentials
 
 # 5. สร้าง Database Schema
 # เปิด pgAdmin แล้วรันไฟล์เหล่านี้ตามลำดับ
-# sql/ddl/02_create_bronze_tables.sql
-# sql/ddl/04_create_silver_tables.sql
-# sql/ddl/05_create_gold_tables.sql
-# sql/ddl/06_create_audit_table.sql
+# sql/ddl/1_create_bronze_table.sql
+# sql/ddl/2_create_fx_rate_table.sql
+# sql/ddl/3_create_silver_table.sql
+# sql/ddl/4_create_gold_table.sql
+# sql/ddl/5_create_audit_table.sql
 ```
 
 ### Run Pipeline
