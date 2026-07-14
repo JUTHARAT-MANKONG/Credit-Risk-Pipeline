@@ -227,7 +227,7 @@ def insert_bronze(conn, good_rows: list):
     sql = f"""
         INSERT INTO bronze.financial_transactions ({col_str})
         VALUES %s
-        ON CONFLICT (cust_id) DO NOTHING;
+        ON CONFLICT (txn_id) DO NOTHING;  
     """
 
     values = [tuple(row[c] for c in columns) for row in good_rows]

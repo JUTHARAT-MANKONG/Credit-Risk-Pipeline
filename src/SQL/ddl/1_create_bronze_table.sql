@@ -9,7 +9,7 @@
 CREATE SCHEMA IF NOT EXISTS bronze;
 CREATE TABLE IF NOT EXISTS bronze.financial_transactions (
     -- ข้อมูล Customer
-    cust_id                         TEXT PRIMARY KEY,
+    cust_id                         TEXT ,
     cust_age                        INTEGER,
     cust_gender                     TEXT,
     cust_marital_status             TEXT,
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS bronze.financial_transactions (
     digital_banking_enrollment      BOOLEAN,
 
     -- ข้อมูล Transaction
-    txn_id                          TEXT,
+    txn_id                          TEXT PRIMARY KEY,
     txn_timestamp                   TIMESTAMP,
     txn_type                        TEXT,
     txn_channel                     TEXT,
