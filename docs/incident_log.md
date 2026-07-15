@@ -105,3 +105,29 @@ Windows CMD อ่านไฟล์ top-down พอเจอ `goto :END` แล
 ### แนวทางป้องกัน
 
 หลีกเลี่ยงการใช้ Subroutine ซับซ้อนใน Windows Batch Script ถ้าต้องการ Logic ซับซ้อนให้ใช้ PowerShell หรือ Python แทน
+
+---
+
+## INC-003 — Bronze Table ใช้ cust_id เป็น PRIMARY KEY ผิด
+
+| | |
+|---|---|
+| วันที่ | 2026-07-14 |
+| ความรุนแรง | P1 (Critical) — ข้อมูลหายและ Report ผิด |
+| สถานะ | Resolved |
+
+### อาการที่พบ
+bronze.financial_transactions เก็บข้อมูลแค่ 1 row ต่อ cust_id
+ทั้งที่ลูกค้า 1 คนมีหลาย Transaction (เฉลี่ย 14 transactions/คน)
+
+### Root Cause
+DDL กำหนด cust_id TEXT PRIMARY KEY ซึ่งทำให้ห้ามมีค่าซ้ำ
+และ ON CONFLICT (cust_id) DO NOTHING ทิ้ง Transaction ที่เหลือทั้งหมด
+
+### วิธีแก้ไข
+เปลี่ยน PRIMARY KEY จาก cust_id เป็น txn_id
+เพราะ 1 row = 1 Transaction ไม่ใช่ 1 Customer
+
+### แนวทางป้องกัน
+ตรวจสอบ Grain ของข้อมูลให้ชัดก่อนออกแบบ Schema
+และ Review DDL ทุกครั้งกับ Business Requirements
