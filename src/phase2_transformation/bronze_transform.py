@@ -158,7 +158,9 @@ def standardize_delinquency(raw_status: str, is_default: bool) -> str:
     if mapped is None:
         raise ValueError(f"ไม่รู้จักค่า Delinquency_Status: '{raw_status}'")
 
-    if mapped == "M3" and is_default: #is_default = ผิดนัดชำระ
+    # ถ้า Default = True ไม่ว่า Delinquency จะเป็น M0/M1/M2/M3 ก็ตาม
+    # ให้ยกระดับเป็น M4+ ทันที เพราะธนาคารตัดสินแล้วว่าเก็บเงินไม่ได้
+    if is_default: #is_default = ผิดนัดชำระ
         return "M4+"
     return mapped
 
@@ -222,8 +224,8 @@ def insert_bronze(conn, good_rows: list):
     columns = list(good_rows[0].keys()) #.keys() = ดึงเฉพาะชื่อ column ออกมาจาก dict
     col_str = ", ".join(columns)
 
-    # ON CONFLICT DO NOTHING ป้องกัน error ถ้า cust_id ซ้ำ (Primary Key)
-    # เพราะ table bronze ตั้ง cust_id เป็น PRIMARY KEY ไว้
+    # ON CONFLICT DO NOTHING ป้องกัน error ถ้า txn_id ซ้ำ (Primary Key)
+    # เพราะ table bronze ตั้ง txn_id เป็น PRIMARY KEY ไว้ (1 row = 1 Transaction)
     sql = f"""
         INSERT INTO bronze.financial_transactions ({col_str})
         VALUES %s

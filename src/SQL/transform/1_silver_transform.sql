@@ -191,12 +191,15 @@ SELECT
     -- Provision Rate 
     -- กำหนด Rate ตามมาตรฐาน BoT/Basel III ตามที่เขียนไว้ใน BRD
     CASE
+        -- ตรวจ Default ก่อนเสมอ ไม่ว่า Delinquency จะเป็นอะไร
+        WHEN b.target_credit_default = TRUE                     THEN 1.00
+
+        -- ถ้าไม่ Default ค่อยดู Delinquency Status
         WHEN b.delinquency_status = 'M0'                        THEN 0.01
         WHEN b.delinquency_status = 'M1'                        THEN 0.02
         WHEN b.delinquency_status = 'M2'                        THEN 0.10
         WHEN b.delinquency_status = 'M3'                        THEN 0.50
-        WHEN b.delinquency_status = 'M4+'
-          OR b.target_credit_default = TRUE                     THEN 1.00
+        WHEN b.delinquency_status = 'M4+'                       THEN 1.00
         ELSE 0.01
     END                                                         AS provision_rate,
 
@@ -207,12 +210,12 @@ SELECT
     ROUND(
         b.orig_balance_after * fx.rate_to_thb *
         CASE
+            WHEN b.target_credit_default = TRUE                 THEN 1.00             
             WHEN b.delinquency_status = 'M0'                    THEN 0.01
             WHEN b.delinquency_status = 'M1'                    THEN 0.02
             WHEN b.delinquency_status = 'M2'                    THEN 0.10
             WHEN b.delinquency_status = 'M3'                    THEN 0.50
-            WHEN b.delinquency_status = 'M4+'
-              OR b.target_credit_default = TRUE                 THEN 1.00
+            WHEN b.delinquency_status = 'M4+'                   THEN 1.00
             ELSE 0.01
         END
     , 2)                                                        AS provision_amount_thb

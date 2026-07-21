@@ -107,11 +107,46 @@ WHERE loan_status NOT IN ('Performing', 'Under-Performing', 'NPL')
 
 UNION ALL
 
+-- Check 6: Default Provision Rate Check (เพิ่มจาก INC-004)
+-- ลูกค้าที่ Target_Credit_Default = True ต้องได้ provision_rate = 1.00 เสมอ
+-- ไม่ว่า Delinquency_Status จะเป็น M0/M1/M2/M3 ก็ตาม
+-- ถ้าไม่เป็น 1.00 แสดงว่า Business Logic ผิดพลาดร้ายแรง
+SELECT
+    'silver_default_provision_rate'             AS check_name,
+    'silver'                                    AS layer,
+    CASE WHEN COUNT(*) = 0 THEN 'PASS'
+         ELSE 'FAIL'
+    END                                         AS status,
+    COUNT(*)                                    AS failed_count,
+    'ลูกค้าที่ Default=True ต้องมี provision_rate = 1.00 เสมอ ไม่ว่า Delinquency จะเป็นอะไร'    AS detail
+FROM silver.loan_accounts
+WHERE target_credit_default = TRUE
+  AND provision_rate != 1.00
+
+UNION ALL
+
+-- Check 7: Default ต้องเป็น NPL เสมอ (INC-004)
+-- ลูกค้าที่ Target_Credit_Default = True ต้องมี loan_status = NPL เสมอ
+-- ถ้าไม่เป็น NPL แสดงว่า Loan Status Logic ผิดพลาด
+SELECT
+    'silver_default_loan_status'                AS check_name,
+    'silver'                                    AS layer,
+    CASE WHEN COUNT(*) = 0 THEN 'PASS'
+         ELSE 'FAIL'
+    END                                         AS status,
+    COUNT(*)                                    AS failed_count,
+    'ลูกค้าที่ Default=True ต้องมี loan_status = NPL เสมอ'    AS detail
+FROM silver.loan_accounts
+WHERE target_credit_default = TRUE
+  AND loan_status != 'NPL'
+
+UNION ALL
+
 -- ════════════════════════════════════════════════════════════
 -- GOLD LAYER CHECKS
 -- ════════════════════════════════════════════════════════════
 
--- Check 6: NPL Ratio Range 
+-- Check 8: NPL Ratio Range 
 -- NPL Ratio ต้องอยู่ระหว่าง 0-100% เสมอ
 -- ถ้าเกิน 100% แสดงว่าการคำนวณผิดพลาดร้ายแรง
 SELECT
@@ -128,7 +163,7 @@ WHERE npl_ratio_pct < 0
 
 UNION ALL
 
--- Check 7: Provision vs Balance 
+-- Check 9: Provision vs Balance 
 -- เงินสำรองต้องไม่เกินยอดหนี้รวม
 -- ถ้าเกิน แสดงว่า Provision Rate หรือการคำนวณผิดพลาด
 SELECT
@@ -144,7 +179,7 @@ WHERE total_provision_thb > outstanding_balance_thb
 
 UNION ALL
 
--- Check 8: Monthly Completeness 
+-- Check 10: Monthly Completeness 
 -- ต้องมีข้อมูลครบ 12 เดือนของปี 2024
 -- ถ้าขาดเดือนไหน Report ที่ส่ง BoT จะไม่สมบูรณ์
 SELECT

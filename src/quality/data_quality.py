@@ -124,7 +124,7 @@ def evaluate_results(results: list) -> bool:
 def main():
     log.info("=" * 50)
     log.info(" เริ่ม Data Quality Framework")
-    log.info(f"   Checks   : Silver (5 checks) + Gold (3 checks)")
+    log.info(f"   Checks   : Silver (7 checks) + Gold (3 checks)")
     log.info(f"   SQL File : {SQL_FILE}")
     log.info("=" * 50)
 
