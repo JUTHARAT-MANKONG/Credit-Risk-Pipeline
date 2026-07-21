@@ -8,3 +8,10 @@ data/raw/*.CSV
 venv/
 
 __pycache__/
+
+# Log files
+logs/
+*.logs
+
+# Report output
+reports/output/
