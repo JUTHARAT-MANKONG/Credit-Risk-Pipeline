@@ -136,9 +136,9 @@ credit-risk-pipeline/
 ### Prerequisites
 
 ```
-Python 3.8+
-PostgreSQL 16
-Git
+Language Runtime: Python 3.8+
+Database System: PostgreSQL 16
+Version Control / Tools: Git
 ```
 
 ### Installation
