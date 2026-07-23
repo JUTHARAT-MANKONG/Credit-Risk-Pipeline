@@ -71,8 +71,9 @@ run_step "Step 2: Load FX Rate"          "src.phase1_ingestion.load_fx_rate"
 run_step "Step 3: Bronze Transform"      "src.phase2_transformation.bronze_transform"
 run_step "Step 4: Silver Transform"      "src.phase2_transformation.silver_transform"
 run_step "Step 5: Gold Aggregate"        "src.phase2_transformation.gold_aggregate"
-run_step "Step 6: Data Quality Check"   "src.quality.data_quality"
+run_step "Step 6: Data Quality Check"    "src.quality.data_quality"
 run_step "Step 7: Reconciliation"        "src.reconciliation.reconciliation"
+run_step "Step 8: Export Report"         "src.reporting.export_report"
 
 # สรุปผล 
 PIPELINE_END=$(date +%s)

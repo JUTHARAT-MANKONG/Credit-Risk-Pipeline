@@ -32,5 +32,9 @@ python -m src.reconciliation.reconciliation
 if %ERRORLEVEL% neq 0 ( echo FAILED Step 7 & exit /b 1 )
 echo SUCCESS Step 7
 
+python -m src.reporting.export_report
+if %ERRORLEVEL% neq 0 ( echo FAILED Step 8 & exit /b 1 )
+echo SUCCESS Step 8
+
 echo All Pipelines Completed!
 endlocal

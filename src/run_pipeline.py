@@ -34,6 +34,7 @@ from phase2_transformation import silver_transform
 from phase2_transformation import gold_aggregate
 from quality import data_quality
 from reconciliation import reconciliation
+from reporting import export_report
 
 # ตั้งค่า Logging
 log = get_logger(__name__)
@@ -88,6 +89,7 @@ def main():
         run_step(audit, "gold_aggregate",        gold_aggregate.main)
         run_step(audit, "data_quality",          data_quality.main)
         run_step(audit, "reconciliation",        reconciliation.main)
+        run_step(audit, "export_report",         export_report.main)
 
         # สรุปผลรวม
         total_duration = time.time() - pipeline_start
